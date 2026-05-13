@@ -1,0 +1,40 @@
+{
+  "name": "repo-hygiene",
+  "version": "0.1.0",
+  "description": "Skills that keep a codebase healthy as agents work in it: orientation, docstrings, doc freshness, test coverage, and commit gates.",
+  "author": {
+    "name": "gg-mo",
+    "email": "mg20000113@gmail.com",
+    "url": "https://github.com/gg-mo"
+  },
+  "homepage": "https://github.com/gg-mo/repo-hygiene",
+  "repository": "https://github.com/gg-mo/repo-hygiene",
+  "license": "MIT",
+  "keywords": [
+    "hygiene",
+    "documentation",
+    "docstrings",
+    "testing",
+    "commits",
+    "code-quality",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Repo Hygiene",
+    "shortDescription": "Keep repos healthy: orientation, docstrings, doc freshness, tests, commit gates",
+    "longDescription": "Use Repo Hygiene to keep codebases healthy as agents work in them. Skills cover initial repo orientation, writing useful docstrings, keeping public-API docs fresh, ensuring new code paths have test coverage, and gating commits behind verification.",
+    "developerName": "gg-mo",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Help me keep this repo's docs and tests in sync as I work.",
+      "Before I commit, run the hygiene checks."
+    ],
+    "websiteURL": "https://github.com/gg-mo/repo-hygiene"
+  }
+}

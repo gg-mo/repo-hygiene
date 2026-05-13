@@ -1,0 +1,6 @@
+{
+  "name": "repo-hygiene",
+  "description": "Skills that keep a codebase healthy: orientation, docstrings, doc freshness, test coverage, and commit gates",
+  "version": "0.1.0",
+  "contextFileName": "GEMINI.md"
+}
