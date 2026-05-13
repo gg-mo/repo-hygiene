@@ -1,0 +1,21 @@
+{
+  "name": "repo-hygiene",
+  "description": "Skills that keep a codebase healthy as agents work in it: repo orientation, docstring discipline, doc freshness, test coverage for new code, and pre-commit verification gates",
+  "version": "0.1.0",
+  "author": {
+    "name": "gg-mo",
+    "email": "mg20000113@gmail.com"
+  },
+  "homepage": "https://github.com/gg-mo/repo-hygiene",
+  "repository": "https://github.com/gg-mo/repo-hygiene",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "hygiene",
+    "documentation",
+    "docstrings",
+    "testing",
+    "commits",
+    "code-quality"
+  ]
+}
