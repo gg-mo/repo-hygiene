@@ -1,0 +1,78 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON manifests
+        run: |
+          set -e
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
+                   .codex-plugin/plugin.json .cursor-plugin/plugin.json \
+                   gemini-extension.json hooks/hooks.json \
+                   hooks/hooks-cursor.json package.json; do
+            python3 -c "import json; json.load(open('$f'))"
+            echo "  OK  $f"
+          done
+
+      - name: Validate SKILL.md frontmatter
+        run: |
+          set -e
+          for f in skills/*/SKILL.md; do
+            head -10 "$f" | grep -q "^name:" || { echo "FAIL: missing 'name:' in $f"; exit 1; }
+            head -10 "$f" | grep -q "^description:" || { echo "FAIL: missing 'description:' in $f"; exit 1; }
+            head -10 "$f" | grep -q "^description: Use when" || { echo "WARN: description in $f does not start with 'Use when'"; }
+            echo "  OK  $f"
+          done
+
+      - name: Validate hook executability
+        run: |
+          set -e
+          test -x hooks/session-start || { echo "FAIL: hooks/session-start not executable"; exit 1; }
+          test -x hooks/run-hook.cmd || { echo "FAIL: hooks/run-hook.cmd not executable"; exit 1; }
+          echo "  OK  hooks have +x bit"
+
+      - name: Smoke test SessionStart hook (Claude Code shape)
+        run: |
+          set -e
+          out=$(CLAUDE_PLUGIN_ROOT="$PWD" bash hooks/session-start)
+          echo "$out" | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          ctx = d['hookSpecificOutput']['additionalContext']
+          assert len(ctx) > 1000, f'bootstrap too short: {len(ctx)} chars'
+          for skill in ['orienting-to-repo', 'writing-docstrings', 'keeping-files-small',
+                        'keeping-docs-fresh', 'testing-new-code', 'writing-commit-messages',
+                        'gating-commits', 'cleaning-existing-codebase']:
+              assert skill in ctx, f'skill {skill} missing from injected bootstrap'
+          print(f'  OK  hook emits {len(ctx)} chars, all 8 sub-skills referenced')
+          "
+
+      - name: Smoke test SessionStart hook (Cursor shape)
+        run: |
+          set -e
+          out=$(CURSOR_PLUGIN_ROOT="$PWD" bash hooks/session-start)
+          echo "$out" | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          assert 'additional_context' in d, 'cursor variant must use snake_case additional_context'
+          print('  OK  cursor JSON shape correct')
+          "
+
+      - name: Smoke test SessionStart hook (Copilot CLI shape)
+        run: |
+          set -e
+          out=$(COPILOT_CLI=1 bash hooks/session-start)
+          echo "$out" | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          assert 'additionalContext' in d and 'hookSpecificOutput' not in d, 'copilot variant must use top-level additionalContext'
+          print('  OK  copilot CLI JSON shape correct')
+          "
